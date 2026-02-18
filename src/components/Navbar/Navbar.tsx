@@ -10,6 +10,15 @@ function Navbar() {
       <div className="flex gap-6">
         <NavLink
           to="/"
+          end
+          className={({ isActive }) =>
+            `text-sm font-medium transition-colors hover:text-amber-400 ${isActive ? "text-amber-400" : "text-gray-300"}`
+          }
+        >
+          Home
+        </NavLink>
+        <NavLink
+          to="/movies"
           className={({ isActive }) =>
             `text-sm font-medium transition-colors hover:text-amber-400 ${isActive ? "text-amber-400" : "text-gray-300"}`
           }
