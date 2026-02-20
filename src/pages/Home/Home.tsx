@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { DEFAULT_HERO, TRENDING_MOVIES_LIMIT } from "@base/const";
+import type { Movie } from "@base/types";
 import { fetchTrendingMovies, getTmdbImageUrl } from "@services/.";
 import MovieCard from "@components/MovieCard";
 import Pagination from "@components/Pagination";
-import { movies } from "@testdata/movies";
 
 type HeroMovie = {
   title: string;
@@ -15,13 +15,18 @@ type HeroMovie = {
 function Home() {
   const [offset, setOffset] = useState(0);
   const [heroMovie, setHeroMovie] = useState<HeroMovie>(DEFAULT_HERO);
-
-  const currentMovies = movies.slice(offset, offset + TRENDING_MOVIES_LIMIT);
+  const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    fetchTrendingMovies()
+    const page = Math.floor(offset / TRENDING_MOVIES_LIMIT) + 1;
+
+    fetchTrendingMovies(page)
       .then((data) => {
-        if (data.results.length > 0) {
+        setTrendingMovies(data.results);
+        setTotalCount(data.total_results);
+
+        if (page === 1 && data.results.length > 0) {
           const movie = data.results[0];
           setHeroMovie({
             title: movie.title,
@@ -30,8 +35,11 @@ function Home() {
           });
         }
       })
-      .catch(() => setHeroMovie(DEFAULT_HERO));
-  }, []);
+      .catch(() => {
+        setTrendingMovies([]);
+        if (page === 1) setHeroMovie(DEFAULT_HERO);
+      });
+  }, [offset]);
 
   return (
     <div className="bg-gray-950">
@@ -66,12 +74,12 @@ function Home() {
           Trending Movies
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-          {currentMovies.map((movie) => (
+          {trendingMovies.map((movie) => (
             <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
         <Pagination
-          totalCount={movies.length}
+          totalCount={totalCount}
           limit={TRENDING_MOVIES_LIMIT}
           offset={offset}
           onPageChange={setOffset}

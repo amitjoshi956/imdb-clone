@@ -7,4 +7,4 @@ export const DEFAULT_HERO = {
   imgSrc: "/hero-banner.png",
 } as const;
 
-export const TRENDING_MOVIES_LIMIT = 5;
+export const TRENDING_MOVIES_LIMIT = 20;

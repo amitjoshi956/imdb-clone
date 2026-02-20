@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import type { Movie } from "@base/types";
+import { getTmdbImageUrl } from "@services/.";
 
 type MovieCardProps = {
   movie: Movie;
@@ -7,13 +8,14 @@ type MovieCardProps = {
 
 const MovieCard: FC<MovieCardProps> = ({ movie }) => {
   const { title, vote_average, poster_path } = movie;
+  const posterSrc = getTmdbImageUrl(poster_path, "w500");
 
   return (
     <div className="group relative rounded-lg overflow-hidden bg-gray-900 shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer">
       {/* Poster Image */}
       <div className="aspect-[2/3] w-full">
         <img
-          src={poster_path}
+          src={posterSrc}
           alt={title}
           className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-80"
           loading="lazy"
