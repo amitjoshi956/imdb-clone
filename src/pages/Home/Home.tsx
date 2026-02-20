@@ -1,9 +1,16 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-
 import MovieCard from "@components/MovieCard";
+import Pagination from "@components/Pagination";
 import { movies } from "@testdata/movies";
 
+const LIMIT = 5;
+
 function Home() {
+  const [offset, setOffset] = useState(0);
+
+  const currentMovies = movies.slice(offset, offset + LIMIT);
+
   return (
     <div className="bg-gray-950">
       {/* Hero Banner */}
@@ -38,10 +45,16 @@ function Home() {
           Trending Movies
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-          {movies.map((movie) => (
+          {currentMovies.map((movie) => (
             <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
+        <Pagination
+          totalCount={movies.length}
+          limit={LIMIT}
+          offset={offset}
+          onPageChange={setOffset}
+        />
       </section>
     </div>
   );
