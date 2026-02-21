@@ -16,3 +16,28 @@ export type TrendingMovies = {
 };
 
 export type ImageSize = "original" | "w1280" | "w780" | "w500" | "w300";
+
+export type Genre = {
+  id: number;
+  name: string;
+};
+
+export type ProductionCompany = {
+  id: number;
+  logo_path: string | null;
+  name: string;
+  origin_country: string;
+};
+
+export type MovieDetails = Movie & {
+  tagline: string;
+  genres: Genre[];
+  runtime: number;
+  vote_count: number;
+  budget: number;
+  revenue: number;
+  status: string;
+  homepage: string;
+  production_companies: ProductionCompany[];
+  original_language: string;
+};

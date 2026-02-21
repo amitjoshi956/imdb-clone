@@ -6,6 +6,7 @@ import PageLoader from "@components/PageLoader";
 const Home = lazy(() => import("@pages/Home"));
 const Movies = lazy(() => import("@pages/Movies"));
 const Watchlist = lazy(() => import("@pages/Watchlist"));
+const MovieDetails = lazy(() => import("@pages/MovieDetails"));
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/movies" element={<Movies />} />
             <Route path="/watchlist" element={<Watchlist />} />
+            <Route path="/movie/:id" element={<MovieDetails />} />
           </Route>
         </Routes>
       </Suspense>

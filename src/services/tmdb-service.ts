@@ -1,5 +1,5 @@
 import { TMDB_IMAGE_BASE_URL } from "@base/const";
-import type { ImageSize, TrendingMovies } from "@base/types";
+import type { ImageSize, MovieDetails, TrendingMovies } from "@base/types";
 import HttpService from "./http-service";
 
 export const getTmdbImageUrl = (path: string, size: ImageSize = "original") =>
@@ -12,5 +12,10 @@ export const fetchTrendingMovies = async (page: number = 1) => {
       params: { page },
     },
   );
+  return response.data;
+};
+
+export const fetchMovieDetails = async (movieId: number) => {
+  const response = await HttpService.get<MovieDetails>(`/movie/${movieId}`);
   return response.data;
 };

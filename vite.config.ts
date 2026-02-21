@@ -23,6 +23,7 @@ export default defineConfig({
       "@services": resolvePath("src/services"),
       "@testdata": resolvePath("src/testdata"),
       "@assets": resolvePath("src/assets"),
+      "@common": resolvePath("src/common"),
     },
   },
 });
