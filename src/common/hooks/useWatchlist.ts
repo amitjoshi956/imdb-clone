@@ -1,30 +1,37 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { StorageKeys } from "@base/const";
 import type { Movie } from "@base/types";
 import StorageUtil from "@common/utils/storage";
 
-const readWatchlist = (): Movie[] =>
-  StorageUtil.getItem<Movie[]>(StorageKeys.WATCHLIST) ?? [];
+type WatchlistMap = Record<number, Movie>;
+
+const readWatchlist = (): WatchlistMap =>
+  StorageUtil.getItem<WatchlistMap>(StorageKeys.WATCHLIST) ?? {};
+
+const persistWatchlist = (map: WatchlistMap) =>
+  StorageUtil.setItem(StorageKeys.WATCHLIST, map);
 
 export const useWatchlist = () => {
-  const [watchlist, setWatchlist] = useState<Movie[]>(readWatchlist);
+  const [watchlistMap, setWatchlistMap] = useState<WatchlistMap>(readWatchlist);
 
-  const isInWatchlist = (movieId: number) =>
-    watchlist.some((m) => m.id === movieId);
+  const watchlist = useMemo(() => Object.values(watchlistMap), [watchlistMap]);
+
+  const isInWatchlist = (movieId: number) => movieId in watchlistMap;
 
   const addToWatchlist = (movie: Movie) => {
-    setWatchlist((prev) => {
-      if (prev.some((m) => m.id === movie.id)) return prev;
-      const next = [...prev, movie];
-      StorageUtil.setItem(StorageKeys.WATCHLIST, next);
+    setWatchlistMap((prev) => {
+      if (movie.id in prev) return prev;
+      const next = { ...prev, [movie.id]: movie };
+      persistWatchlist(next);
       return next;
     });
   };
 
   const removeFromWatchlist = (movieId: number) => {
-    setWatchlist((prev) => {
-      const next = prev.filter((m) => m.id !== movieId);
-      StorageUtil.setItem(StorageKeys.WATCHLIST, next);
+    setWatchlistMap((prev) => {
+      if (!(movieId in prev)) return prev;
+      const { [movieId]: _, ...next } = prev;
+      persistWatchlist(next);
       return next;
     });
   };
