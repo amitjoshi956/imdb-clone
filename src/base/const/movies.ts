@@ -8,3 +8,4 @@ export const DEFAULT_HERO = {
 } as const;
 
 export const TRENDING_MOVIES_LIMIT = 20;
+export const FETCH_THRESHOLD = 5;

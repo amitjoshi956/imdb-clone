@@ -8,7 +8,7 @@ export type Movie = {
   release_date: string;
 };
 
-export type TrendingMovies = {
+export type MovieListResponse = {
   page: number;
   results: Movie[];
   total_pages: number;
