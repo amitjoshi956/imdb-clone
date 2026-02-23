@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useWatchlist } from "@common/hooks";
 import { DEFAULT_HERO, TRENDING_MOVIES_LIMIT } from "@base/const";
 import type { Movie } from "@base/types";
 import { fetchTrendingMovies, getTmdbImageUrl } from "@services/.";
@@ -17,6 +18,7 @@ function Home() {
   const [heroMovie, setHeroMovie] = useState<HeroMovie>(DEFAULT_HERO);
   const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]);
   const [totalCount, setTotalCount] = useState(0);
+  const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
 
   useEffect(() => {
     const page = Math.floor(offset / TRENDING_MOVIES_LIMIT) + 1;
@@ -75,7 +77,13 @@ function Home() {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
           {trendingMovies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              isWatchlisted={isInWatchlist(movie.id)}
+              onAddToWatchlist={addToWatchlist}
+              onRemoveFromWatchlist={removeFromWatchlist}
+            />
           ))}
         </div>
         <Pagination
