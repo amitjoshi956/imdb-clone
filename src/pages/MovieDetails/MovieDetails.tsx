@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import type { MovieDetails as MovieDetailsType } from "@base/types";
 import { fetchMovieDetails, getTmdbImageUrl } from "@services/.";
+import { useWatchlist } from "@common/hooks";
 import { formatCurrency, formatRuntime } from "@common/utils/conversions";
 import PageLoader from "@components/PageLoader";
 
@@ -11,6 +12,7 @@ function MovieDetails() {
   const [movie, setMovie] = useState<MovieDetailsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
 
   useEffect(() => {
     if (!id) return;
@@ -45,6 +47,21 @@ function MovieDetails() {
   const backdropUrl = getTmdbImageUrl(movie.backdrop_path, "original");
   const posterUrl = getTmdbImageUrl(movie.poster_path, "w500");
   const releaseYear = movie.release_date?.split("-")[0];
+  const isWatchlisted = isInWatchlist(movie.id);
+
+  const watchlistBtnClass = isWatchlisted
+    ? "bg-gray-800 text-amber-400 border border-gray-700 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/40"
+    : "bg-amber-400 text-gray-950 hover:bg-amber-300";
+
+  const watchlistBtnText = isWatchlisted
+    ? "✕ Remove from Watchlist"
+    : "+ Add to Watchlist";
+
+  const handleAddToWatchlist = () => {
+    return isWatchlisted
+      ? removeFromWatchlist(movie.id)
+      : addToWatchlist(movie);
+  };
 
   return (
     <div className="bg-gray-950 min-h-screen text-white">
@@ -130,17 +147,26 @@ function MovieDetails() {
               <span className="capitalize">{movie.status}</span>
             </div>
 
-            {/* Homepage link */}
-            {movie.homepage && (
-              <a
-                href={movie.homepage}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm text-amber-400 hover:text-amber-300 transition mt-1 w-fit"
+            {/* Actions row */}
+            <div className="flex flex-wrap items-center gap-3 mt-2">
+              <button
+                onClick={handleAddToWatchlist}
+                className={`inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition ${watchlistBtnClass}`}
               >
-                Visit Official Site ↗
-              </a>
-            )}
+                {watchlistBtnText}
+              </button>
+
+              {movie.homepage && (
+                <a
+                  href={movie.homepage}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-gray-700 px-5 py-2.5 text-sm font-semibold text-gray-300 transition hover:text-amber-400 hover:border-amber-400/40"
+                >
+                  Visit Official Site ↗
+                </a>
+              )}
+            </div>
           </div>
         </div>
 
