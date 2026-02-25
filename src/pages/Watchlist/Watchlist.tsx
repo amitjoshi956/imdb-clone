@@ -1,10 +1,23 @@
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useWatchlist } from "@common/hooks";
 import MovieCard from "@components/MovieCard";
+import Searchbar from "@components/Searchbar";
 
 function Watchlist() {
   const { watchlist, isInWatchlist, addToWatchlist, removeFromWatchlist } =
     useWatchlist();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredWatchlist = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+
+    if (!query) return watchlist;
+    
+    return watchlist.filter((movie) =>
+      movie.title.toLowerCase().includes(query),
+    );
+  }, [watchlist, searchQuery]);
 
   if (watchlist.length === 0) {
     return (
@@ -33,17 +46,40 @@ function Watchlist() {
           ({watchlist.length})
         </span>
       </h1>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
-        {watchlist.map((movie) => (
-          <MovieCard
-            key={movie.id}
-            movie={movie}
-            isWatchlisted={isInWatchlist(movie.id)}
-            onAddToWatchlist={addToWatchlist}
-            onRemoveFromWatchlist={removeFromWatchlist}
-          />
-        ))}
-      </div>
+
+      <Searchbar
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder="Search your watchlist..."
+        className="mb-8"
+      />
+
+      {filteredWatchlist.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 gap-3">
+          <p className="text-lg text-gray-400">
+            No movies match "
+            <span className="text-white font-medium">{searchQuery}</span>"
+          </p>
+          <button
+            onClick={() => setSearchQuery("")}
+            className="text-sm text-amber-400 hover:text-amber-300 transition-colors"
+          >
+            Clear search
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+          {filteredWatchlist.map((movie) => (
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              isWatchlisted={isInWatchlist(movie.id)}
+              onAddToWatchlist={addToWatchlist}
+              onRemoveFromWatchlist={removeFromWatchlist}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
